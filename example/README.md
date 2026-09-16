@@ -35,6 +35,8 @@ cmake -S example -B example/build -DGDK_ROOT=/实际的/gdk/目录
 
 如果安装包库名或目录不同，以安装包中的 `examples/cpp/CMakeLists.txt` 为准，指定 `GDK_INCLUDE_DIR`（包含 `gdk/gdk.h` 的目录）、`GDK_LIBRARY`（实际库文件的绝对路径）。若官方示例还链接其他库，可通过 `GDK_EXTRA_LIBRARIES` 传入分号分隔的列表。运行时也需在同一个终端 `source ~/.cache/agibot/app/env.sh`。
 
+远程编译已确认：安装包中的 `JointControlReq` 没有文档列出的 `uuid` 成员，示例不设置该字段。接口差异以实际安装包头文件为准。
+
 ## 1. 查看连接、关节状态和夹爪型号
 
 ```bash

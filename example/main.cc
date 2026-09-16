@@ -6,7 +6,6 @@
 #include <exception>
 #include <iomanip>
 #include <iostream>
-#include <random>
 #include <string>
 #include <thread>
 #include <vector>
@@ -22,18 +21,6 @@ bool Check(gdk::GDKRes result, const char* operation) {
   std::cerr << operation << " failed, GDK code=" << static_cast<int>(result)
             << '\n';
   return false;
-}
-
-std::string Uuid() {
-  std::random_device random;
-  std::uniform_int_distribution<int> digit(0, 15);
-  std::string uuid = "00000000-0000-4000-8000-000000000000";
-  const char* hex = "0123456789abcdef";
-  for (std::size_t i = 0; i < uuid.size(); ++i) {
-    if (uuid[i] != '-' && i != 14 && i != 19) uuid[i] = hex[digit(random)];
-  }
-  uuid[19] = hex[8 + digit(random) % 4];
-  return uuid;
 }
 
 bool ReadState(gdk::Robot& robot, gdk::JointStates* states) {
@@ -144,7 +131,6 @@ int Run(const example::Options& options) {
       return 1;
     }
     gdk::JointControlReq request;
-    request.uuid = Uuid();
     request.life_time = lifetime;
     request.joint_names = {options.joint};
     request.joint_positions = {target};
