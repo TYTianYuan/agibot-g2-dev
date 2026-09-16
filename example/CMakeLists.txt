@@ -10,18 +10,31 @@ target_include_directories(example_options PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
 target_compile_options(example_options PRIVATE -Wall -Wextra -Wpedantic)
 
 option(EXAMPLE_WITH_GDK "Build the executable that connects to the robot" ON)
-set(GDK_ROOT "$ENV{HOME}/.cache/agibot/app/gdk" CACHE PATH "Installed GDK root")
+if(DEFINED ENV{GDK_HOME} AND NOT "$ENV{GDK_HOME}" STREQUAL "")
+  set(_gdk_default_root "$ENV{GDK_HOME}/app/gdk")
+else()
+  set(_gdk_default_root "$ENV{HOME}/.cache/agibot/app/gdk")
+endif()
+set(GDK_ROOT "${_gdk_default_root}" CACHE PATH "Installed GDK root")
 set(GDK_EXTRA_LIBRARIES "" CACHE STRING "Additional libraries required by the installed SDK")
 
 if(EXAMPLE_WITH_GDK)
-  find_path(GDK_INCLUDE_DIR gdk/gdk.h HINTS "${GDK_ROOT}/include" "${GDK_ROOT}")
-  find_library(GDK_LIBRARY NAMES gdk HINTS "${GDK_ROOT}/lib" "${GDK_ROOT}/lib64")
+  if(NOT CMAKE_SYSTEM_PROCESSOR MATCHES "^(x86_64|aarch64)$")
+    message(FATAL_ERROR "Unsupported GDK architecture: ${CMAKE_SYSTEM_PROCESSOR}")
+  endif()
+  set(_gdk_cpp_root "${GDK_ROOT}/build_dep/cpp/${CMAKE_SYSTEM_PROCESSOR}")
+  find_path(GDK_INCLUDE_DIR gdk/gdk.h HINTS "${_gdk_cpp_root}/include"
+            NO_DEFAULT_PATH)
+  find_library(GDK_LIBRARY NAMES gdk_adapter HINTS "${_gdk_cpp_root}/lib"
+               NO_DEFAULT_PATH)
   if(NOT GDK_INCLUDE_DIR OR NOT GDK_LIBRARY)
     message(FATAL_ERROR
-      "GDK headers/library not found. Install GDK on the development machine. "
+      "GDK headers/libgdk_adapter not found under ${_gdk_cpp_root}. "
       "Set GDK_ROOT, or set GDK_INCLUDE_DIR and GDK_LIBRARY to the actual paths "
       "used by the installed SDK's examples/cpp/CMakeLists.txt.")
   endif()
+  message(STATUS "GDK include: ${GDK_INCLUDE_DIR}")
+  message(STATUS "GDK adapter: ${GDK_LIBRARY}")
   find_package(Threads REQUIRED)
   add_executable(example main.cc)
   target_include_directories(example PRIVATE "${GDK_INCLUDE_DIR}")

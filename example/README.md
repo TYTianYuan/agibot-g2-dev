@@ -22,7 +22,12 @@ cmake --build example/build -j2
 
 需要 CMake 3.16 及以上、C++17 编译器和与机器人匹配的 GDK 安装包。安装 GDK、网线连接和 IP 配置参见根目录 README；示例不会自动安装软件或修改网络配置。
 
-CMake 默认在 `~/.cache/agibot/app/gdk` 下查找 `gdk/gdk.h` 和 `libgdk`。**现有文档没有提供 SDK 的 CMake 导出目标及库布局，本机也没有安装 GDK，默认查找路径尚未通过实际 SDK 验证。** 安装在其他目录时可指定：
+CMake 按远程安装包中官方 `examples/cpp/CMakeLists.txt` 的布局查找头文件和链接库：
+
+- 头文件：`~/.cache/agibot/app/gdk/build_dep/cpp/x86_64/include/gdk/gdk.h`
+- 链接库：`~/.cache/agibot/app/gdk/build_dep/cpp/x86_64/lib/libgdk_adapter.so`
+
+在 aarch64 机器上自动选择对应的 `aarch64` 目录。如果设置了 `GDK_HOME`，首次配置默认使用 `$GDK_HOME/app/gdk`。本机仍未安装真实 SDK，实际编译、链接和运行需在远程开发机验证。安装在其他目录时可显式指定 `GDK_ROOT`（优先于环境变量）：
 
 ```bash
 cmake -S example -B example/build -DGDK_ROOT=/实际的/gdk/目录
