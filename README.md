@@ -2,6 +2,10 @@
 
 智元 G2 机器人开发：GDK 接入、感知、运动控制、仿真与任务应用。
 
+## 运行示例
+
+[example：上肢关节运动与夹爪开合](example/README.md)。独立 C++/CMake 项目，可读取实机关节状态和夹爪型号，逐个控制上肢关节、张开或闭合夹爪，不依赖相机。
+
 ## GDK v2.6.3 开发文档
 
 官方文档：[机器人开发套件 GDK v2.6.3](https://support.agibot.com/?gdk_version=2.6.3)。
